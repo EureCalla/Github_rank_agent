@@ -7,7 +7,7 @@
 
 -- 表 1：每週 GitHub 排行研究資料（某來源、某週、某 repo）
 CREATE TABLE IF NOT EXISTS research_github (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    id              INTEGER PRIMARY KEY,
     source          TEXT    NOT NULL,            -- 篩選方式，例：OpenGithubs/github-weekly-rank
     week            TEXT,                          -- 排行週別 YYYY-Www
     rank            INTEGER,                       -- 該來源當週名次（1 起算）
