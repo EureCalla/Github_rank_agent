@@ -42,28 +42,30 @@ def cmd_fetch() -> None:
 
 
 def cmd_digest(week: str | None) -> None:
-    """印某週排行（最新週為預設），帶出個人評價與研究狀態。"""
+    """印某週排行（最新週為預設），標註是否新進榜、個人評價與研究狀態。
+
+    每筆標 [NEW]（從未在更早的週上榜）或 [SEEN]，並列 status/rating，
+    供 weekly-digest skill 分「新進榜」與「追蹤區」兩塊。
+    """
     storage.init_db()
     rows = storage.load_week_digest(week)
     if not rows:
         print("（沒有資料；先執行 `python main.py fetch`）")
         return
-    print(f"== 週別 {rows[0]['week']}　共 {len(rows)} 筆 ==")
+    new_cnt = sum(1 for r in rows if r["is_new"])
+    print(f"== 週別 {rows[0]['week']}　共 {len(rows)} 筆（新進榜 {new_cnt}）==")
     for r in rows:
-        tags = []
-        if r["research_status"] == "done":
-            tags.append("✅已研究")
-        elif r["research_status"] == "interested":
-            tags.append("⭐想研究")
-        elif r["research_status"] == "researching":
-            tags.append("🔬研究中")
-        if r["personal_rating"] is not None:
-            tags.append(f"評{r['personal_rating']}")
-        tag_str = f"  [{' '.join(tags)}]" if tags else ""
-        stars = r["total_stars"]
-        growth = r["weekly_growth"]
+        flag = "NEW " if r["is_new"] else "SEEN"
+        status = r["research_status"] or "-"
+        rating = r["personal_rating"] if r["personal_rating"] is not None else "-"
+        rank = f"{r['rank']:>2}" if r["rank"] is not None else " -"
+        stars = r["total_stars"] if r["total_stars"] is not None else "-"
+        growth = r["weekly_growth"] if r["weekly_growth"] is not None else "-"
         desc = (r["description"] or "").strip()
-        print(f"#{r['rank']:>2} {r['repo_full_name']}  ⭐{stars}  🔺{growth}{tag_str}")
+        print(
+            f"#{rank} [{flag}] {r['repo_full_name']}  "
+            f"⭐{stars} 🔺{growth}  status={status} rating={rating}"
+        )
         print(f"     {r['repo_url']}")
         if desc:
             print(f"     {desc}")

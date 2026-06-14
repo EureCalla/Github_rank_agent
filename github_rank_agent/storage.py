@@ -197,7 +197,12 @@ def load_week_digest(
                    g.total_stars, g.weekly_growth, g.monthly_growth,
                    g.created_date, g.description, g.language,
                    e.personal_rating, e.personal_notes,
-                   r.status AS research_status
+                   r.status AS research_status,
+                   CASE WHEN EXISTS(
+                       SELECT 1 FROM research_github p
+                       WHERE p.repo_full_name = g.repo_full_name
+                         AND p.week < g.week
+                   ) THEN 0 ELSE 1 END AS is_new
             FROM research_github g
             LEFT JOIN repo_evaluation e ON e.repo_full_name = g.repo_full_name
             LEFT JOIN repo_research   r ON r.repo_full_name = g.repo_full_name
