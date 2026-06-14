@@ -1,0 +1,71 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Local secrets and machine-specific config
+*.env
+.env.*
+secrets/
+private/
+config.local.*
+
+# Logs and runtime output
+*.log
+logs/
+output/
+outputs/
+reports/output/
+cache/
+.cache/
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+*.spec
+
+# Database and local data cache
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Datasets are local artifacts by default
+datasets/**
+
+# Side-project rule: ignore files whose name contains test
+test*
+*test*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
