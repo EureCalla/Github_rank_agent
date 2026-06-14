@@ -11,6 +11,11 @@ description: 使用者在本 repo 以「本周好料 / 本週好料 / 本周乾�
 
 工作目錄為 repo 根目錄（home：`D:/github/Github_rank_agent`）。
 
+## 重要規則
+
+- **回答一律用繁體中文**：DB 的 `description` 統一存乾淨英文，但你對使用者輸出的好料總結與所有對話，永遠用繁體中文導讀。
+- **description 清理**：抓取時程式已自動清掉 emoji／奇怪符號並收斂空白。產出總結前，若發現某筆描述**非英文或仍雜亂**，先用 `python main.py set-desc <owner/name> "<乾淨英文描述>"` 修正（用簡潔英文重寫），再進行總結。
+
 ## 流程
 
 ### 1. 確認資料新鮮度

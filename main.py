@@ -88,6 +88,15 @@ def cmd_researched(repo: str) -> None:
     print(f"✅ 已標記研究完畢：{repo}")
 
 
+def cmd_set_desc(repo: str, text: str, week: str | None) -> None:
+    storage.init_db()
+    n = storage.set_description(repo, text, week=week)
+    if n:
+        print(f"已更新描述：{repo}")
+    else:
+        print(f"找不到對應列（repo={repo} week={week or '最新'}）")
+
+
 def cmd_to_research() -> None:
     storage.init_db()
     rows = storage.get_research(status="interested")
@@ -119,6 +128,11 @@ def build_parser() -> argparse.ArgumentParser:
     rs = sub.add_parser("researched", help="標記已研究完畢")
     rs.add_argument("repo")
 
+    sd = sub.add_parser("set-desc", help="覆寫某 repo 的乾淨英文描述")
+    sd.add_argument("repo")
+    sd.add_argument("text")
+    sd.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
+
     sub.add_parser("to-research", help="列出 status=interested 的 repo")
     return p
 
@@ -136,6 +150,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_rate(args.repo, args.rating, args.notes)
     elif cmd == "researched":
         cmd_researched(args.repo)
+    elif cmd == "set-desc":
+        cmd_set_desc(args.repo, args.text, args.week)
     elif cmd == "to-research":
         cmd_to_research()
 

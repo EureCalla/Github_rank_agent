@@ -14,6 +14,7 @@ from pathlib import Path
 
 from . import config
 from .models import RepoRecord
+from .textutil import clean_description
 
 VALID_STATUS = ("interested", "researching", "done")
 
@@ -79,7 +80,7 @@ def upsert_records(records: list[RepoRecord], db_path: Path = config.DB_PATH) ->
             "weekly_growth": r.weekly_growth,
             "monthly_growth": r.monthly_growth,
             "created_date": r.created_date,
-            "description": r.description,
+            "description": clean_description(r.description),
             "language": r.language,
         }
         for r in records
@@ -87,6 +88,29 @@ def upsert_records(records: list[RepoRecord], db_path: Path = config.DB_PATH) ->
     with _connect(db_path) as conn:
         conn.executemany(sql, rows)
     return len(rows)
+
+
+def set_description(
+    repo_full_name: str,
+    description: str,
+    week: str | None = None,
+    db_path: Path = config.DB_PATH,
+) -> int:
+    """覆寫某 repo 在某週的 description（會先清理）。
+
+    供 weekly-digest skill 把非英文/雜亂描述統一成乾淨英文用。
+    week 省略時套用最新週。回傳更新列數。
+    """
+    cleaned = clean_description(description)
+    with _connect(db_path) as conn:
+        if week is None:
+            week = conn.execute("SELECT MAX(week) FROM research_github").fetchone()[0]
+        cur = conn.execute(
+            "UPDATE research_github SET description = :d "
+            "WHERE repo_full_name = :repo AND week = :week",
+            {"d": cleaned, "repo": repo_full_name, "week": week},
+        )
+        return cur.rowcount
 
 
 def latest_week(db_path: Path = config.DB_PATH) -> str | None:
