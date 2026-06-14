@@ -31,6 +31,22 @@ python main.py digest
 ### 2. 讀取本週資料
 `python main.py digest` 會列出本週每個 repo：名次、`owner/name`、總星標、上週成長、連結、描述，以及既有標記（`⭐想研究` / `✅已研究` / `評N`）。
 
+### 2.5 補齊缺漏的描述（description 為 NULL）
+有些 repo 抓下來沒有描述。產出總結前先補齊：
+
+```bash
+python main.py missing-desc
+```
+對列出的每個 repo：
+1. 用 **WebFetch 讀 `repo_url`**（GitHub 頁面的 About / README / 簡介），理解它在做什麼。
+2. 用**簡潔乾淨的英文**寫一句描述，寫回 DB：
+   ```bash
+   python main.py set-desc <owner/name> "<乾淨英文描述>"
+   ```
+3. 全部補完後再進入下一步。
+
+（這樣 DB 的 `description` 永遠是乾淨英文；給使用者看的總結則一律繁體中文。）
+
 ### 3. 產出分類好料總結
 依各 repo 的描述與成長，**由你（agent）歸類**並寫成總結。格式範例：
 

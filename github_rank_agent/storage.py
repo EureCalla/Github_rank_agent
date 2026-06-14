@@ -18,7 +18,9 @@ from .textutil import clean_description
 
 VALID_STATUS = ("interested", "researching", "done")
 
-# UPSERT 衝突時會被來源更新的欄位（language 另以 COALESCE 處理）
+# UPSERT 衝突時會被來源「無條件覆寫」的欄位。
+# description / language 另以 COALESCE 處理：來源為 NULL 時保留既有值，
+# 避免 agent 補的描述（set-desc）被下次 fetch 洗掉。
 _SOURCE_COLUMNS = (
     "rank",
     "repo_url",
@@ -26,7 +28,6 @@ _SOURCE_COLUMNS = (
     "weekly_growth",
     "monthly_growth",
     "created_date",
-    "description",
     "fetched_at",
 )
 
@@ -67,6 +68,7 @@ def upsert_records(records: list[RepoRecord], db_path: Path = config.DB_PATH) ->
          :description, :language, datetime('now','localtime'))
     ON CONFLICT(source, week, repo_full_name) DO UPDATE SET
         {set_clause},
+        description=COALESCE(excluded.description, research_github.description),
         language=COALESCE(excluded.language, research_github.language)
     """
     rows = [
@@ -111,6 +113,25 @@ def set_description(
             {"d": cleaned, "repo": repo_full_name, "week": week},
         )
         return cur.rowcount
+
+
+def get_missing_description(
+    week: str | None = None, db_path: Path = config.DB_PATH
+) -> list[sqlite3.Row]:
+    """列出某週 description 為 NULL/空的 repo（repo_full_name, repo_url, rank）。
+
+    供 weekly-digest skill 找出要回頭讀 GitHub 頁面補描述的對象。
+    week 省略時取最新週。
+    """
+    with _connect(db_path) as conn:
+        if week is None:
+            week = conn.execute("SELECT MAX(week) FROM research_github").fetchone()[0]
+        return conn.execute(
+            "SELECT rank, repo_full_name, repo_url FROM research_github "
+            "WHERE week = :w AND (description IS NULL OR description = '') "
+            "ORDER BY rank ASC",
+            {"w": week},
+        ).fetchall()
 
 
 def latest_week(db_path: Path = config.DB_PATH) -> str | None:

@@ -97,6 +97,17 @@ def cmd_set_desc(repo: str, text: str, week: str | None) -> None:
         print(f"找不到對應列（repo={repo} week={week or '最新'}）")
 
 
+def cmd_missing_desc(week: str | None) -> None:
+    storage.init_db()
+    rows = storage.get_missing_description(week)
+    if not rows:
+        print("（本週描述都已齊全）")
+        return
+    print(f"缺描述（{len(rows)}）— 請讀 repo_url 後用 set-desc 補：")
+    for r in rows:
+        print(f"  #{r['rank']:>2} {r['repo_full_name']}  {r['repo_url']}")
+
+
 def cmd_to_research() -> None:
     storage.init_db()
     rows = storage.get_research(status="interested")
@@ -133,6 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
     sd.add_argument("text")
     sd.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
 
+    md = sub.add_parser("missing-desc", help="列出本週 description 為空的 repo")
+    md.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
+
     sub.add_parser("to-research", help="列出 status=interested 的 repo")
     return p
 
@@ -152,6 +166,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_researched(args.repo)
     elif cmd == "set-desc":
         cmd_set_desc(args.repo, args.text, args.week)
+    elif cmd == "missing-desc":
+        cmd_missing_desc(args.week)
     elif cmd == "to-research":
         cmd_to_research()
 

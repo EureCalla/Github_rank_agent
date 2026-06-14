@@ -44,6 +44,8 @@ python main.py digest [--week YYYY-Www]       # 印某週排行（含評價/研�
 python main.py interested <owner/name> ...     # 標記想進一步研究
 python main.py rate <owner/name> <1-10> [--notes "心得"]
 python main.py researched <owner/name>         # 標記已研究完畢
+python main.py missing-desc                      # 列出本週 description 為空的 repo
+python main.py set-desc <owner/name> "<英文描述>" # 補/覆寫某 repo 的乾淨英文描述
 python main.py to-research                      # 列出 status=interested（供「深度研究」）
 ```
 
