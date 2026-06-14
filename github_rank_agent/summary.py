@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .github_client import RepoRecord
+from .models import RepoRecord
 
 
 @dataclass

@@ -53,6 +53,9 @@ database/*.db
 database/*.sqlite
 database/*.sqlite3
 
+# Exception: research_github.db 是本 repo 的研究資產，刻意納入 git 追蹤
+!database/research_github.db
+
 # Datasets are local artifacts by default
 datasets/**
 

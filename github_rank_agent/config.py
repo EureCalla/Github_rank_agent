@@ -11,11 +11,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 DATABASE_DIR = ROOT / "database"
-DB_PATH = DATABASE_DIR / "github_rank.db"        # 本機快取，不進 git
+# 研究資料庫：納入 git 追蹤（本 repo 的研究資產）
+DB_PATH = DATABASE_DIR / "research_github.db"
 SCHEMA_PATH = DATABASE_DIR / "schema.sql"
 OUTPUT_DIR = ROOT / "output"                      # 報告輸出，不進 git
 
-# GitHub API token 對應的環境變數名稱
+# GitHub API token 對應的環境變數名稱。
+# 目前主流程（抓週排行）不需要 token；保留供未來補抓語言等 enrichment 使用（選填）。
 GITHUB_TOKEN_ENV = "GITHUB_TOKEN"
 
 

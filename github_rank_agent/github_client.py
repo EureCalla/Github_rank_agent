@@ -1,41 +1,24 @@
-"""GitHub 查詢與 API client。
+"""GitHub API enrichment（選填，未來用）。
 
-負責呼叫 GitHub Search API 取得 repo 排名資料。
-目前僅定義資料格式與介面，實際查詢尚未實作（見 AGENTS.md：先定義資料格式，再實作抓取流程）。
+本 repo 主流程（抓週排行）是用 sources/ 底下的篩選方式從現成排行頁面抓資料，
+不需要 GitHub API token。此模組保留給「未來」用 GitHub API 補來源沒有的欄位
+（例如 language、forks、topics），目前尚未使用。
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-
-
-@dataclass
-class RepoRecord:
-    """單一 repo 的查詢結果資料格式（對應 database/schema.sql 的 weekly_rankings）。"""
-
-    full_name: str                       # owner/name
-    stars: int = 0
-    forks: int = 0
-    language: str | None = None
-    topics: list[str] = field(default_factory=list)
+from .models import RepoRecord
 
 
 class GithubClient:
-    """GitHub Search API 的薄包裝。"""
+    """GitHub REST API 的薄包裝（enrichment 用，尚未實作）。"""
 
     def __init__(self, token: str | None = None) -> None:
         self.token = token
 
-    def search_top_repos(self, query: str, limit: int = 50) -> list[RepoRecord]:
-        """依查詢條件取得排名前 ``limit`` 的 repo。
-
-        Args:
-            query: GitHub search 查詢字串（例如 ``"stars:>1000 language:python"``）。
-            limit: 取回的 repo 數量上限。
-
-        Returns:
-            依名次排序的 :class:`RepoRecord` 清單。
+    def enrich_language(self, record: RepoRecord) -> RepoRecord:
+        """以 GitHub API 補上 repo 的主要語言。
 
         Note:
-            尚未實作；之後接上 GitHub Search API 時再補 ``requirements.txt``。
+            尚未實作；之後查 ``GET /repos/{owner}/{repo}`` 填入 ``record.language``。
         """
-        raise NotImplementedError("GitHub Search API 查詢尚未實作")
+        raise NotImplementedError("GitHub API enrichment 尚未實作")

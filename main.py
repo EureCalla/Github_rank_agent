@@ -1,30 +1,41 @@
 """Github_rank_agent 入口。
 
-串接每週排名整理流程（目前為骨架，尚未完整實作）：
-    1. 查詢 GitHub 排名         -> github_rank_agent.github_client
-    2. 儲存本週快照             -> github_rank_agent.storage
-    3. 與上週比較產生摘要        -> github_rank_agent.summary
-    4. 輸出報告                 -> github_rank_agent.report
+每週排行整理流程：
+    1. 初始化 / 確認 research_github.db（依 database/schema.sql）
+    2. 對每個已啟用的「篩選方式」抓本週排行
+    3. UPSERT 進 research_github（保留個人欄位）
 
-GitHub API token 透過環境變數 GITHUB_TOKEN 載入（見 github_rank_agent.config）。
+第一個篩選方式：OpenGithubs/github-weekly-rank。
 """
 from __future__ import annotations
 
-from github_rank_agent import config, storage
-from github_rank_agent.github_client import GithubClient
+import sys
+
+from github_rank_agent import storage
+from github_rank_agent.sources import ENABLED_SOURCES
+
+# Windows 終端預設非 UTF-8，避免中文輸出亂碼
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
 
 
-def run_weekly(query: str = "stars:>1000", limit: int = 50) -> None:
-    """執行一次每週排名整理流程。
-
-    Note:
-        各步驟的實作仍為 stub，串接邏輯待後續補上。
-    """
+def run() -> None:
+    """執行一次每週排行抓取與寫入。"""
     storage.init_db()
-    client = GithubClient(token=config.get_github_token())
-    # TODO: 查詢 -> 儲存 -> 摘要 -> 報告
-    raise NotImplementedError("每週流程尚未實作")
+    total = 0
+    for source in ENABLED_SOURCES:
+        try:
+            records = source.fetch()
+        except Exception as exc:  # 單一來源失敗不影響其他來源
+            print(f"[skip] {source.name}: 抓取失敗 - {exc}")
+            continue
+        n = storage.upsert_records(records)
+        total += n
+        print(f"[ok]   {source.name}: 抓到 {n} 筆")
+    print(f"完成：共寫入/更新 {total} 筆 -> {storage.config.DB_PATH}")
 
 
 if __name__ == "__main__":
-    run_weekly()
+    run()

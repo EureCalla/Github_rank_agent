@@ -1,2 +1,2 @@
-﻿# No runtime dependencies yet.
-# Add packages here when implementation starts.
+# Github_rank_agent runtime dependencies
+requests>=2.31
