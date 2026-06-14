@@ -97,6 +97,12 @@ def cmd_set_desc(repo: str, text: str, week: str | None) -> None:
         print(f"找不到對應列（repo={repo} week={week or '最新'}）")
 
 
+def cmd_add_repo(url: str, desc: str | None, source: str) -> None:
+    storage.init_db()
+    full = storage.add_manual_repo(url, description=desc, source=source)
+    print(f"已加入資料庫：{full}（source={source}）")
+
+
 def cmd_missing_desc(week: str | None) -> None:
     storage.init_db()
     rows = storage.get_missing_description(week)
@@ -144,6 +150,11 @@ def build_parser() -> argparse.ArgumentParser:
     sd.add_argument("text")
     sd.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
 
+    ar = sub.add_parser("add-repo", help="手動把一個 GitHub repo 加入資料庫")
+    ar.add_argument("url")
+    ar.add_argument("--desc", default=None, help="乾淨英文描述")
+    ar.add_argument("--source", default="manual")
+
     md = sub.add_parser("missing-desc", help="列出本週 description 為空的 repo")
     md.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
 
@@ -166,6 +177,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_researched(args.repo)
     elif cmd == "set-desc":
         cmd_set_desc(args.repo, args.text, args.week)
+    elif cmd == "add-repo":
+        cmd_add_repo(args.url, args.desc, args.source)
     elif cmd == "missing-desc":
         cmd_missing_desc(args.week)
     elif cmd == "to-research":

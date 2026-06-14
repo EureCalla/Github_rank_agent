@@ -25,6 +25,12 @@ python main.py fetch      # 等同 python main.py（無子指令時預設 fetch�
 `skills/weekly-digest/SKILL.md` 執行：讀本週資料 → 產出分類好料總結 → 結尾問使用者對哪些 repo 有興趣 →
 以 `python main.py interested <owner/name>` 寫入想研究標記。
 
+## 「直接丟 GitHub 連結」skill
+
+使用者**沒問乾貨、而是直接貼一個 GitHub repo 連結**時，依 `skills/add-repo/SKILL.md` 執行：
+先問是否加入資料庫 → 是則 WebFetch 讀該 repo、繁中簡短說明用途、`python main.py add-repo <url> --desc "<英文>"`
+→ 確認後問是否標記「想進行深度研究」（`python main.py interested <owner/name>`）。
+
 ## 資料模型（三張表，以 `repo_full_name` 串接）
 
 | 表 | 用途 | 維護者 |
@@ -44,6 +50,7 @@ python main.py digest [--week YYYY-Www]       # 印某週排行（含評價/研�
 python main.py interested <owner/name> ...     # 標記想進一步研究
 python main.py rate <owner/name> <1-10> [--notes "心得"]
 python main.py researched <owner/name>         # 標記已研究完畢
+python main.py add-repo <url> --desc "<英文描述>" # 手動把一個 GitHub repo 加入資料庫
 python main.py missing-desc                      # 列出本週 description 為空的 repo
 python main.py set-desc <owner/name> "<英文描述>" # 補/覆寫某 repo 的乾淨英文描述
 python main.py to-research                      # 列出 status=interested（供「深度研究」）

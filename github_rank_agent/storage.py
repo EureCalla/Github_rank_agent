@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import date
 from pathlib import Path
 
 from . import config
@@ -132,6 +133,45 @@ def get_missing_description(
             "ORDER BY rank ASC",
             {"w": week},
         ).fetchall()
+
+
+def _current_iso_week() -> str:
+    y, w, _ = date.today().isocalendar()
+    return f"{y}-W{w:02d}"
+
+
+def parse_full_name(repo_url: str) -> str:
+    """從 GitHub 連結取出 owner/name。"""
+    if "github.com/" not in repo_url:
+        raise ValueError(f"不是 GitHub 連結：{repo_url}")
+    rest = repo_url.split("github.com/", 1)[1].strip("/")
+    parts = rest.split("/")
+    if len(parts) < 2 or not parts[0] or not parts[1]:
+        raise ValueError(f"無法解析 owner/name：{repo_url}")
+    return f"{parts[0]}/{parts[1]}"
+
+
+def add_manual_repo(
+    repo_url: str,
+    description: str | None = None,
+    source: str = "manual",
+    week: str | None = None,
+    db_path: Path = config.DB_PATH,
+) -> str:
+    """手動把一個 GitHub repo 加入 research_github（重用 upsert，自動清描述）。
+
+    回傳 owner/name。source 預設 'manual'；week 預設本 ISO 週；rank 留空。
+    """
+    full_name = parse_full_name(repo_url)
+    rec = RepoRecord(
+        source=source,
+        repo_full_name=full_name,
+        repo_url=f"https://github.com/{full_name}",
+        week=week or _current_iso_week(),
+        description=description,
+    )
+    upsert_records([rec], db_path)
+    return full_name
 
 
 def latest_week(db_path: Path = config.DB_PATH) -> str | None:

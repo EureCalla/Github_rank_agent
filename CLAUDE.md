@@ -14,6 +14,12 @@
 依 `skills/weekly-digest/SKILL.md` 執行：讀本週資料 → 產出**分類好料總結** → 結尾問使用者
 對哪些 repo 有興趣 → `python main.py interested <owner/name>` 寫入想研究標記。
 
+## 觸發：直接丟 GitHub 連結
+
+使用者沒問乾貨、而是直接貼一個 GitHub repo 連結時，依 `skills/add-repo/SKILL.md` 執行：
+先問是否加入資料庫 → 是則讀該 repo、繁中簡短說明、`python main.py add-repo <url> --desc "<英文>"`
+→ 確認後問是否標記「想進行深度研究」。
+
 ## 三張表（以 repo_full_name 串接）
 
 - `research_github`：週排行快照（抓取資料，勿手改）
