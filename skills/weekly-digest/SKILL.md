@@ -79,7 +79,7 @@ python main.py missing-desc
 
 **改寫示範**（原始資料 → 好料總結寫法）：
 - 原始：`Lum1104/Understand-Anything：53.5k stars，週增 7,701。把 code 轉互動知識圖，支援 Claude Code / Codex / Cursor 等。`
-- 改寫：`🧠 Understand-Anything — 把任何程式碼轉成互動式流程圖／知識圖譜，視覺化超讚！支援 Claude Code / Codex / Cursor（53.5k⭐，本週 +7.7k）`
+- 改寫：`Understand-Anything — 把任何程式碼轉成互動式流程圖／知識圖譜，視覺化超讚！支援 Claude Code / Codex / Cursor（53.5k⭐，本週 +7.7k）`
 
 ### 4. 結尾提問並記錄興趣
 總結結尾**主動詢問**：「對哪些 repo 有興趣、想進一步研究？」
