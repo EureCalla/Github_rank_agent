@@ -45,7 +45,7 @@ python main.py fetch      # 等同 python main.py（無子指令時預設 fetch�
 ## CLI（給 skill / 手動使用）
 
 ```bash
-python main.py fetch                          # 抓本週排行
+python main.py fetch [--if-needed]            # 抓本週排行（--if-needed：本週已有非手動資料則略過）
 python main.py digest [--week YYYY-Www]       # 印某週排行（含評價/研究狀態）
 python main.py interested <owner/name> ...     # 標記想進一步研究
 python main.py rate <owner/name> <1-10> [--notes "心得"]

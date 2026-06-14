@@ -20,13 +20,11 @@ description: 使用者在本 repo 以「本周好料 / 本週好料 / 本周乾�
 
 ### 1. 確認資料新鮮度
 ```bash
+python main.py fetch --if-needed
 python main.py digest
 ```
-- 若輸出「沒有資料」或 `週別` 不是本 ISO 週 → 先抓最新：
-  ```bash
-  python main.py fetch
-  python main.py digest
-  ```
+- `fetch --if-needed`：**若本週（ISO 週）已有非手動來源（`source != 'manual'`）的排行資料就略過抓取**，直接沿用現有 DB；只有本週還沒抓過時才真的去抓。
+- 換句話說：同一週第二次以後問乾貨，不會重抓，直接用 DB 現有內容呈現；手動加入的 repo（source=manual）不會被誤判成「已抓過本週排行」。
 
 ### 2. 讀取本週資料
 `python main.py digest` 會列出本週每個 repo：名次、`owner/name`、總星標、上週成長、連結、描述，以及既有標記（`⭐想研究` / `✅已研究` / `評N`）。

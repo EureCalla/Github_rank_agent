@@ -135,9 +135,24 @@ def get_missing_description(
         ).fetchall()
 
 
-def _current_iso_week() -> str:
+def current_week() -> str:
+    """今天的 ISO 週別，例：2026-W25。"""
     y, w, _ = date.today().isocalendar()
     return f"{y}-W{w:02d}"
+
+
+def has_ranking_for_week(week: str | None = None, db_path: Path = config.DB_PATH) -> bool:
+    """該週是否已有『非手動來源』的排行資料（手動加入的 repo 不算）。
+
+    供 weekly-digest 判斷本週是否還需要重新抓取。week 省略時取本 ISO 週。
+    """
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT 1 FROM research_github "
+            "WHERE week = :w AND source != 'manual' LIMIT 1",
+            {"w": week or current_week()},
+        ).fetchone()
+    return row is not None
 
 
 def parse_full_name(repo_url: str) -> str:
@@ -167,7 +182,7 @@ def add_manual_repo(
         source=source,
         repo_full_name=full_name,
         repo_url=f"https://github.com/{full_name}",
-        week=week or _current_iso_week(),
+        week=week or current_week(),
         description=description,
     )
     upsert_records([rec], db_path)

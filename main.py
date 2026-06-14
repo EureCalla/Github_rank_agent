@@ -25,9 +25,16 @@ except (AttributeError, ValueError):
     pass
 
 
-def cmd_fetch() -> None:
-    """抓各來源本週排行並 UPSERT。"""
+def cmd_fetch(if_needed: bool = False) -> None:
+    """抓各來源本週排行並 UPSERT。
+
+    if_needed=True 時，若本週已有非手動來源的排行資料就略過抓取，
+    直接沿用現有 DB（供 weekly-digest 用）。
+    """
     storage.init_db()
+    if if_needed and storage.has_ranking_for_week():
+        print(f"本週（{storage.current_week()}）排行已存在，沿用現有資料，略過抓取。")
+        return
     total = 0
     for source in ENABLED_SOURCES:
         try:
@@ -131,7 +138,12 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Github_rank_agent CLI")
     sub = p.add_subparsers(dest="cmd")
 
-    sub.add_parser("fetch", help="抓本週排行寫入 DB")
+    f = sub.add_parser("fetch", help="抓本週排行寫入 DB")
+    f.add_argument(
+        "--if-needed",
+        action="store_true",
+        help="本週已有非手動來源資料則略過抓取",
+    )
 
     d = sub.add_parser("digest", help="印某週排行供編排好料總結")
     d.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
@@ -168,7 +180,7 @@ def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
     cmd = args.cmd or "fetch"  # 無子指令時預設 fetch
     if cmd == "fetch":
-        cmd_fetch()
+        cmd_fetch(getattr(args, "if_needed", False))
     elif cmd == "digest":
         cmd_digest(args.week)
     elif cmd == "interested":
