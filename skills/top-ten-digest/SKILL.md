@@ -71,6 +71,18 @@ python main.py profile     # 你過去標記/評價過的 repo + 描述（判斷
 python main.py interested <owner/name> [<owner/name> ...]
 ```
 
+## 「進一步介紹」（深入導讀，先不標記）
+
+使用者看完清單後說「**進一步介紹**」（某 repo 或名次）時：
+1. 用 **WebFetch 讀該 repo** 的 `https://github.com/<owner/name>`（README / About），做一段**較完整的繁體中文介紹**：用途、主要功能/亮點、適用情境，必要時與同類工具比較。
+2. **先不要做任何標記**（不要寫 interested）。
+3. 介紹完再問：「要把它標記為『想進一步研究』嗎？」使用者說要才執行：
+   ```bash
+   python main.py interested <owner/name>
+   ```
+
+對照：使用者直接說「我對 X 有興趣」→ 直接標記；說「進一步介紹」→ 只導讀、不標記。
+
 ## 規則
 - 回答一律繁體中文；DB 的 `description` 存乾淨英文。
 - 10 個盡量分散、不重複；不足則按 5:3:2 比例、至少各一。

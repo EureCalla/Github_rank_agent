@@ -98,6 +98,18 @@ python main.py interested <owner/name> [<owner/name> ...]
 ```
 寫入 `repo_research`（status=interested）。
 
+## 「進一步介紹」（深入導讀，先不標記）
+
+使用者看完清單後說「**進一步介紹**」（某 repo 或名次）時：
+1. 用 **WebFetch 讀該 repo** 的 `https://github.com/<owner/name>`（README / About），做一段**較完整的繁體中文介紹**：用途、主要功能/亮點、適用情境，必要時與同類工具比較。
+2. **先不要做任何標記**（不要寫 interested）。
+3. 介紹完再問：「要把它標記為『想進一步研究』嗎？」使用者說要才執行：
+   ```bash
+   python main.py interested <owner/name>
+   ```
+
+對照：使用者直接說「我對 X 有興趣」→ 直接標記；說「進一步介紹」→ 只導讀、不標記。
+
 ## 後續（非本 skill）
 - 使用者說「深度研究」時，由深度研究 skill 以 `python main.py to-research` 取出 status=interested 的 repo 逐一研究，完成後 `python main.py researched <owner/name>`。
 - 個人評價：`python main.py rate <owner/name> <1-10> [--notes "心得"]`。
