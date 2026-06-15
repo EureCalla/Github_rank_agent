@@ -25,6 +25,12 @@ python main.py fetch      # 等同 python main.py（無子指令時預設 fetch�
 `skills/weekly-digest/SKILL.md` 執行：讀本週資料 → 產出分類好料總結 → 結尾問使用者對哪些 repo 有興趣 →
 以 `python main.py interested <owner/name>` 寫入想研究標記。
 
+## 「十大乾貨」skill
+
+使用者**特別只要 10 個精選**（`十大乾貨 / 十大好料 / 10 大乾貨 / 本周十大 / 給我 10 個 / Top 10`）時，依
+`skills/top-ten-digest/SKILL.md`：以 **5 熱門 + 3 貼合過去興趣（讀 `python main.py profile`）+ 2 個人實用推薦**
+組成不重複的 10 個；不足 10 個則按 5:3:2 比例縮放、每類至少 1。繁中導讀並說明入選理由。
+
 ## 「直接丟 GitHub 連結」skill
 
 使用者**沒問乾貨、而是直接貼一個 GitHub repo 連結**時，依 `skills/add-repo/SKILL.md` 執行：
@@ -53,6 +59,7 @@ python main.py researched <owner/name>         # 標記已研究完畢
 python main.py add-repo <url> --desc "<英文描述>" # 手動把一個 GitHub repo 加入資料庫
 python main.py missing-desc                      # 列出本週 description 為空的 repo
 python main.py set-desc <owner/name> "<英文描述>" # 補/覆寫某 repo 的乾淨英文描述
+python main.py profile                           # 匯出你的口味檔（已標記/評價的 repo + 描述）
 python main.py to-research                      # 列出 status=interested（供「深度研究」）
 ```
 

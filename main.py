@@ -123,6 +123,22 @@ def cmd_missing_desc(week: str | None) -> None:
         print(f"  #{r['rank']:>2} {r['repo_full_name']}  {r['repo_url']}")
 
 
+def cmd_profile() -> None:
+    storage.init_db()
+    rows = storage.load_profile()
+    if not rows:
+        print("（還沒有任何標記/評價，無法建立口味檔）")
+        return
+    print(f"== 你的口味檔（{len(rows)} 個已標記/評價的 repo）==")
+    for r in rows:
+        status = r["research_status"] or "-"
+        rating = r["personal_rating"] if r["personal_rating"] is not None else "-"
+        desc = (r["description"] or "").strip()
+        print(f"- {r['repo_full_name']}  status={status} rating={rating}")
+        if desc:
+            print(f"    {desc}")
+
+
 def cmd_to_research() -> None:
     storage.init_db()
     rows = storage.get_research(status="interested")
@@ -172,6 +188,8 @@ def build_parser() -> argparse.ArgumentParser:
     md = sub.add_parser("missing-desc", help="列出本週 description 為空的 repo")
     md.add_argument("--week", default=None, help="週別 YYYY-Www，預設最新週")
 
+    sub.add_parser("profile", help="匯出你的口味檔（已標記/評價的 repo + 描述）")
+
     sub.add_parser("to-research", help="列出 status=interested 的 repo")
     return p
 
@@ -195,6 +213,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_add_repo(args.url, args.desc, args.source)
     elif cmd == "missing-desc":
         cmd_missing_desc(args.week)
+    elif cmd == "profile":
+        cmd_profile()
     elif cmd == "to-research":
         cmd_to_research()
 

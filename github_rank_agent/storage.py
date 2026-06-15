@@ -286,6 +286,36 @@ def mark_researched(repo_full_name: str, db_path: Path = config.DB_PATH) -> None
     set_research_status(repo_full_name, "done", db_path)
 
 
+def load_profile(db_path: Path = config.DB_PATH) -> list[sqlite3.Row]:
+    """使用者口味檔：所有曾被標記研究狀態或評價過的 repo，附最新一筆描述。
+
+    供「十大乾貨」judge『與過去興趣最相干』用。
+    """
+    with _connect(db_path) as conn:
+        return conn.execute(
+            """
+            WITH marked AS (
+                SELECT repo_full_name FROM repo_research
+                UNION
+                SELECT repo_full_name FROM repo_evaluation
+            )
+            SELECT m.repo_full_name,
+                   rr.status AS research_status,
+                   re.personal_rating,
+                   re.personal_notes,
+                   (SELECT g.description FROM research_github g
+                    WHERE g.repo_full_name = m.repo_full_name
+                      AND g.description IS NOT NULL
+                    ORDER BY g.week DESC LIMIT 1) AS description
+            FROM marked m
+            LEFT JOIN repo_research   rr ON rr.repo_full_name = m.repo_full_name
+            LEFT JOIN repo_evaluation re ON re.repo_full_name = m.repo_full_name
+            ORDER BY (re.personal_rating IS NULL), re.personal_rating DESC,
+                     rr.status
+            """
+        ).fetchall()
+
+
 def get_research(
     status: str | None = None, db_path: Path = config.DB_PATH
 ) -> list[sqlite3.Row]:

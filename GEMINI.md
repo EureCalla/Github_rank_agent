@@ -14,6 +14,12 @@
 依 `skills/weekly-digest/SKILL.md` 執行：讀本週資料 → 產出**分類好料總結** → 結尾問使用者
 對哪些 repo 有興趣 → `python main.py interested <owner/name>` 寫入想研究標記。
 
+## 觸發詞：十大乾貨
+
+使用者特別只要 10 個（`十大乾貨 / 十大好料 / 10 大乾貨 / 本周十大 / 給我 10 個 / Top 10`）時，依
+`skills/top-ten-digest/SKILL.md`：5 熱門 + 3 貼合過去興趣（`python main.py profile`）+ 2 私房實用推薦，
+不重複；不足 10 則按 5:3:2 比例、至少各一。
+
 ## 觸發：直接丟 GitHub 連結
 
 使用者沒問乾貨、而是直接貼一個 GitHub repo 連結時，依 `skills/add-repo/SKILL.md` 執行：
